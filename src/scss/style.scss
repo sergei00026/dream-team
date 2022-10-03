@@ -1,0 +1,642 @@
+@use "sass:math";
+
+// Подключение миксинов ===========================================================================================================================================================================================================================================================================
+@import "base/mixins";
+
+// Подключение шрифтов ===========================================================================================================================================================================================================================================================================
+//&display=swap - добавить при подключении через плагин
+
+// Подключить если есть локальные файлы шрифтов
+@import "fonts/fonts";
+
+// Подключение иконочных шрифтов ==============================================================================================================================================================================================================================================================================
+// Подключить если есть файл иконочного шрифта
+//@import "fonts/icons";
+
+// ============================================================================================================================================================================================================================================================================================================================================================================================
+// Настройки шаблона ============================================================================================================================================================================================================================================================================================================================================================================================
+// ============================================================================================================================================================================================================================================================================================================================================================================================
+
+// Шрифт по умолчанию ==============================================================================================================================================================================================================================================================================
+$fontFamily: "Segoe WP";
+$fontSize: rem(31); // где 14(px) - размер шрифта по умолчанию из макета
+
+// Основные цвета
+$mainColor: #0a0c0a; // Цвет шрифта по умолчанию
+
+// Настройки адаптивной сетки ===============================================================================================================================================================================================================================================================================================
+
+// Минимальная ширина страницы
+$minWidth: 320;
+// Ширина полотна (макета)
+$maxWidth: 1900;
+// Ширина ограничивающего контейнера (0 = нет ограничения)
+$maxWidthContainer: 1120;
+// Общий отступ у контейнера
+// (30 = по 15px слева и справа, 0 = нет отступа)
+$containerPadding: 30;
+
+// Ширина срабатывания первого брейкпоинта
+$containerWidth: $maxWidthContainer + $containerPadding;
+
+// Брейк-поинты
+$pc: em($containerWidth); // ПК, ноутбуки, некоторые планшеты в горизонтальном положении
+$tablet: em(991.98); // Планшеты, некоторые телефоны в горизонтальном положении
+$mobile: em(767.98); // Телефоны L
+$mobileSmall: em(479.98); // Телефоны S
+
+// Тип адаптива:
+// 1 = отзывчивость (у контейнера нет брейкпоинтов),
+// 2 = по брейк-поинтам (контейнер меняет свою ширину по брейк-поинтам)
+$responsiveType: 1;
+
+// ============================================================================================================================================================================================================================================================================================================================================================================================
+// ============================================================================================================================================================================================================================================================================================================================================================================================
+
+// Обнуление ============================================================================================================================================================================================== =============================================================================================== ===============================================================================================
+@import "base/null";
+
+// Стили тега BODY ============================================================================================================================================================================================================================================================================================================================================================================================
+
+body {
+	// Скролл заблокирован
+	.lock & {
+		overflow: hidden;
+		touch-action: none;
+	}
+	// Сайт загружен
+	.loaded & {
+	}
+}
+
+// Оболочка wrapper ============================================================================================================================================================================================================================================================================================================================================================================================================================================
+.wrapper {
+	min-height: 100%;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	// Прижимаем footer
+	> main {
+		flex: 1 1 auto;
+	}
+	// Фикс для слайдеров
+	> * {
+		min-width: 0;
+	}
+}
+// Ограничивающий контейнер ======================================================================================================================================================================================================================
+
+/*
+(i) Стили будут применяться ко 
+всем классам содержащим *__container
+Например header__container, main__container и т.д.
+Снипет (HTML): cnt
+*/
+@if ($responsiveType==1) {
+	// Отзывчивая
+	[class*="__container"] {
+		@if ($maxWidthContainer>0) {
+			max-width: rem($maxWidthContainer);
+			box-sizing: content-box;
+			margin: 0 auto;
+		}
+		@if ($containerPadding>0) {
+			padding: 0 rem(math.div($containerPadding, 2));
+		}
+	}
+} @else {
+	// По брейк-поинтам
+	[class*="__container"] {
+		margin: 0 auto;
+		@if ($maxWidthContainer>0) {
+			max-width: rem($maxWidthContainer);
+			box-sizing: content-box;
+		} @else {
+			@if ($containerPadding>0) {
+				padding: 0 rem(math.div($containerPadding, 2));
+			}
+		}
+		@media (max-width: $pc) {
+			max-width: rem(970);
+		}
+		@media (max-width: $tablet) {
+			max-width: rem(750);
+		}
+		@media (max-width: $mobile) {
+			max-width: none;
+			@if ($containerPadding>0 and $maxWidthContainer>0) {
+				padding: 0 rem(math.div($containerPadding, 2));
+			}
+		}
+	}
+}
+
+// Подключение базовых стилей, шаблонов (заготовок) и вспомогательных  классов
+// Для подключения/отключения конкретных стилей смотри base.scss
+@import "base";
+
+// Подключение стилей общих элементов проекта
+@import "common";
+
+// Подключение стилей отдельных блоков
+@import "header";
+@import "footer";
+
+// Подключение стилей отдельных страниц
+.page {
+	// .page__main
+	&__main {
+	}
+}
+.main-page {
+	// .main-page__container
+	&__container {
+		display: grid;
+		@media (min-width: $mobile) {
+			grid-template-columns: repeat(2, 1fr);
+			align-items: center;
+		}
+		@include adaptiveValue("padding-top", 150, 50);
+		@include adaptiveValue("padding-bottom", 100, 50);
+	}
+	// .main-page__promo
+	&__promo {
+		display: grid;
+		height: 100%;
+		.main-page__item {
+			align-self: end;
+		}
+		@media (max-width: $mobile) {
+			order: 2;
+		}
+	}
+	// .main-page__img
+	&__img {
+		max-width: 100%;
+		&:not(:last-child) {
+			margin-bottom: 100px;
+			@media (max-width: $mobile) {
+				margin-bottom: 40px;
+			}
+		}
+		@media (max-width: $mobile) {
+			margin-left: auto;
+			margin-right: auto;
+		}
+	}
+	// .main-page__box
+	&__box {
+		font-size: 16px;
+		line-height: math.div(21, 16);
+		display: flex;
+		@include adaptiveValue("gap", 93, 25);
+		&:not(:last-child) {
+			margin-bottom: 20px;
+		}
+		@media (max-width: $mobile) {
+			font-size: 14px;
+			align-items: center;
+
+			& > div {
+				flex: 0 0 48%;
+			}
+		}
+	}
+	// .main-page__item
+	&__item {
+		display: flex;
+		align-items: center;
+		@include adaptiveValue("gap", 25, 15);
+	}
+	// .main-page__content
+	&__content {
+		display: grid;
+		height: 100%;
+		@media (max-width: $mobile) {
+			order: 1;
+		}
+		@media (min-width: $mobile) {
+			padding-left: 15px;
+		}
+	}
+	// .main-page__title
+	&__title {
+		font-weight: 700;
+		@include adaptiveValue("font-size", 80, 45);
+		line-height: math.div(106, 80);
+		&:not(:last-child) {
+			margin-bottom: 50px;
+		}
+	}
+	// .main-page__subtitle
+	&__subtitle {
+		@include adaptiveValue("font-size", 31, 24);
+		line-height: math.div(41, 31);
+		&:not(:last-child) {
+			margin-bottom: 96px;
+			@media (max-width: $mobile) {
+				margin-bottom: 50px;
+			}
+		}
+	}
+	// .main-page__block
+	&__block {
+		display: flex;
+		@include adaptiveValue("gap", 49, 20);
+		align-items: center;
+		&:not(:last-child) {
+			margin-bottom: 129px;
+		}
+		@media (max-width: $mobile) {
+			margin-bottom: 30px;
+		}
+	}
+	// .main-page__price
+	&__price {
+		align-items: center;
+		font-weight: 700;
+		font-size: 31px;
+		line-height: math.div(41, 31);
+	}
+	// .main-page__button
+	&__button {
+		font-size: inherit;
+		background: #5887da;
+		border-radius: 5px;
+		font-weight: 700;
+		font-size: 16px;
+		line-height: math.div(21, 16);
+		text-transform: uppercase;
+		color: #ffffff;
+		min-height: 50px;
+		padding: 10px 34px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+}
+// ===================
+.page {
+	// .page__rider
+	&__rider {
+	}
+	// .page__description
+	&__description {
+	}
+	// .page__literature
+	&__literature {
+	}
+	// .page__specifications
+	&__specifications {
+	}
+	// .page__models
+	&__models {
+	}
+	// .page__help
+	&__help {
+	}
+}
+.left-page {
+	@include adaptiveValue("padding-top", 100, 50);
+	@include adaptiveValue("padding-bottom", 100, 50);
+	// .left-page__pink
+	&__pink {
+		background: #fbf6f1;
+	}
+	// .left-page__container
+	&__container {
+		display: grid;
+		@media (min-width: $mobile) {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+	// .left-page__left
+	&__left {
+		@media (min-width: $mobile) {
+			padding-right: 50px;
+		}
+	}
+	// .left-page__title
+	&__title {
+		font-weight: 700;
+		@include adaptiveValue("font-size", 50, 24);
+		line-height: math.div(67, 50);
+		&:not(:last-child) {
+			margin-bottom: 50px;
+		}
+	}
+	// .left-page__description
+	&__description {
+		@include adaptiveValue("font-size", 31, 18);
+		line-height: math.div(41, 31);
+		margin-bottom: 30px;
+	}
+	// .left-page__right
+	&__right {
+		display: grid;
+		height: 100%;
+		align-items: center;
+		@media (min-width: $tablet) {
+			padding-left: 30px;
+		}
+	}
+	// .left-page__box
+	&__box {
+		@include adaptiveValue("font-size", 21, 16);
+		line-height: math.div(28, 18);
+		display: flex;
+		gap: 21px;
+		justify-self: center;
+		margin-bottom: 30px;
+		@media (min-width: $mobile) {
+			max-width: 320px;
+		}
+		&_left {
+			@media (min-width: $mobile) {
+				justify-self: start;
+			}
+		}
+	}
+	// .left-page__img
+	&__img {
+		max-width: 100%;
+		@media (max-width: $mobile) {
+			margin: 0 auto;
+		}
+	}
+}
+// ====================
+
+.description-page {
+	@include adaptiveValue("padding-top", 100, 50);
+	@include adaptiveValue("padding-bottom", 100, 50);
+	// .description-page__container
+	&__container {
+		@include adaptiveValue("font-size", 31, 14);
+		line-height: math.div(41, 31);
+		text-align: center;
+	}
+}
+//=================
+
+.right-page {
+	@include adaptiveValue("padding-top", 100, 50);
+	@include adaptiveValue("padding-bottom", 100, 50);
+	// .right-page__blue
+	&__blue {
+		background: #f5f5f7;
+	}
+	// .right-page__container
+	&__container {
+		display: grid;
+		@media (min-width: $mobile) {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+	// .right-page__left
+	&__left {
+		display: grid;
+		height: 100%;
+		align-items: center;
+		@media (max-width: $mobile) {
+			order: 2;
+		}
+		@media (min-width: $mobile) {
+			justify-content: start;
+		}
+	}
+	// .right-page__box
+	&__box {
+		@include adaptiveValue("font-size", 21, 16);
+		line-height: math.div(28, 18);
+		display: flex;
+		gap: 21px;
+		justify-self: center;
+		margin-bottom: 30px;
+		@media (min-width: $mobile) {
+			max-width: 320px;
+		}
+	}
+	// .right-page__img
+	&__img {
+		max-width: 100%;
+		@media (max-width: $mobile) {
+			margin: 0 auto;
+		}
+	}
+	// .right-page__right
+	&__right {
+		@media (min-width: $mobile) {
+			padding-left: 15px;
+		}
+		@media (max-width: $mobile) {
+			order: 1;
+		}
+	}
+	// .right-page__title
+	&__title {
+		font-weight: 700;
+		@include adaptiveValue("font-size", 50, 24);
+		line-height: math.div(67, 50);
+		&:not(:last-child) {
+			margin-bottom: 50px;
+		}
+	}
+	// .right-page__description
+	&__description {
+		@include adaptiveValue("font-size", 31, 18);
+		line-height: math.div(41, 31);
+		margin-bottom: 30px;
+	}
+}
+//========================
+
+.specifications-page {
+	// .specifications-page__container
+	&__container {
+	}
+	// .specifications-page__img
+	&__img {
+		margin: 0 auto;
+		@include adaptiveValue("padding-bottom", 100, 50);
+		display: block;
+		max-width: 100%;
+	}
+	// .specifications-page__body
+	&__body {
+	}
+	// .specifications-page__title
+	&__title {
+		font-size: 50px;
+		line-height: math.div(67, 50);
+		text-align: center;
+		@include adaptiveValue("font-size", 50, 24);
+		@include adaptiveValue("margin-bottom", 70, 30);
+	}
+	// .specifications-page__box
+	&__box {
+		display: grid;
+		column-gap: 30px;
+		row-gap: 30px;
+		grid-template-columns: minmax(300px, 0.3fr) minmax(30px, 680px);
+		@include adaptiveValue("font-size", 31, 14);
+		line-height: math.div(41, 31);
+		@media (max-width: $mobile) {
+			grid-template-columns: minmax(200px, 0.3fr) minmax(30px, 680px);
+			column-gap: 20px;
+		}
+		@media (max-width: $mobileSmall) {
+			grid-template-columns: minmax(100px, 0.3fr) minmax(30px, 680px);
+			row-gap: 20px;
+		}
+	}
+	// .specifications-page__headings
+	&__headings {
+		color: #8d9091;
+	}
+	// .specifications-page__item
+	&__item {
+	}
+}
+// ==============================
+.models-page {
+	// .models-page__container
+	&__container {
+	}
+	// .models-page__title
+	&__title {
+		font-weight: 700;
+		font-size: 50px;
+		line-height: math.div(67, 50);
+		text-align: center;
+		@include adaptiveValue("font-size", 50, 24);
+		@include adaptiveValue("margin-bottom", 70, 30);
+	}
+	// .models-page__slider
+	&__slider {
+		overflow: visible !important;
+		position: relative;
+		&::before {
+			content: "";
+			position: absolute;
+			height: 100%;
+			top: 0;
+			left: -1500px;
+			width: 1500px;
+			background: rgba(255, 255, 255, 0.652);
+			z-index: 2;
+		}
+		&::after {
+			content: "";
+			position: absolute;
+			height: 100%;
+			top: 0;
+			right: -1500px;
+			width: 1500px;
+			background: rgba(255, 255, 255, 0.652);
+			z-index: 2;
+		}
+	}
+	// .models-page__wrapper
+	&__wrapper {
+	}
+	// .models-page__slide
+	&__slide {
+		display: flex;
+		background: #f8f8f8;
+		border-radius: 5px;
+		padding: 28px 20px;
+		gap: 20px;
+		cursor: pointer;
+	}
+	// .models-page__img
+	&__img {
+		max-width: 100%;
+	}
+	// .models-page__content
+	&__content {
+		display: flex;
+		flex-direction: column;
+	}
+	// .models-page__heading
+	&__heading {
+		font-size: 16px;
+		line-height: math.div(21, 16);
+		color: #00615b;
+		margin-bottom: 7px;
+	}
+	// .models-page__description
+	&__description {
+		font-size: 12px;
+		line-height: math.div(16, 12);
+		color: #8d9091;
+		flex: 1 1 auto;
+	}
+	// .models-page__price
+	&__price {
+		font-size: 16px;
+		line-height: math.div(21, 16);
+	}
+}
+//=========================
+
+.help-page {
+	background: #f7f9fc;
+
+	// .help-page__container
+	&__container {
+		display: grid;
+		max-width: 100%;
+		@media (min-width: $mobile) {
+			grid-template-columns: 0.47fr 0.53fr;
+		}
+	}
+	&__content {
+		@include adaptiveValue("padding-top", 250, 50);
+		@include adaptiveValue("padding-bottom", 272, 50);
+
+		@media (min-width: $mobile) {
+			max-width: calc(423px + 127px);
+			justify-self: end;
+			@include adaptiveValue("padding-right", 127, 10, 1920, 768, 1);
+		}
+	}
+	&__bg {
+		background: url("@img/page/help/bg.png") top right/cover no-repeat;
+	}
+	// .help-page__title
+	&__title {
+		font-weight: 700;
+		font-size: 50px;
+		line-height: math.div(67, 50);
+		@include adaptiveValue("font-size", 50, 24);
+		@include adaptiveValue("margin-bottom", 70, 30);
+		&:not(:last-child) {
+			margin-bottom: 20px;
+		}
+	}
+	// .help-page__subtitle
+	&__subtitle {
+		font-size: 21px;
+		line-height: math.div(28, 21);
+		&:not(:last-child) {
+			margin-bottom: 30px;
+		}
+	}
+	// .help-page__button
+	&__button {
+		font-size: inherit;
+		background: #5887da;
+		border-radius: 5px;
+		font-weight: 700;
+		@include adaptiveValue("font-size", 16, 14);
+		line-height: math.div(21, 16);
+		text-transform: uppercase;
+		color: #ffffff;
+		min-height: 50px;
+		padding: 10px 34px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+}
